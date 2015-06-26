@@ -30,21 +30,43 @@ def filename_to_sequence(filename):
         return m.group(1).upper().split('_')
 
 
+def theme_line(filename, sequence):
+    return '{}\t{}\n'.format(filename, ''.join([chr(int(code, 16)) for code in sequence]))
+
+
 emojis = []
+filenames = []
+names = {}
+
 print('Reading Unicode 8 list')
-with open('./emoji-unicode8.txt', 'r', encoding='utf-8') as unicode8:
-    for line in unicode8.readlines():
+with open('./emoji-ordered.txt', 'r', encoding='utf-8') as textfile:
+    for line in textfile.readlines():
         m = re.match('((?:U\+[A-F\d]+ )+)(\S+) (.+)$', line)
         if m:
+            sequence = [code[2:] for code in m.group(1).lower().strip().split(' ')]
+            filename = 'emoji_u{}.png'.format('_'.join(sequence))
+
             emojis.append({
-                'sequence': [code[2:] for code in m.group(1).lower().strip().split(' ')],
+                'sequence': sequence,
                 'chars': m.group(2),
                 'name': m.group(3),
+                'filename': filename,
             })
+            filenames.append(filename)
+
 print('Read', len(emojis), 'emojis.')
 
 
-with open(os.path.join(themedir, 'theme2'), 'w', encoding='utf-8', newline='') as newtheme:
+images = []
+for imgfile in os.listdir(themedir):
+    m = re.match('emoji_u(\w+)\.png', imgfile)
+    if m:
+        sequence = m.group(1).upper().split('_')
+        if sequence not in exclude:
+            images.append(imgfile)
+
+
+with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as newtheme:
     newtheme.write(
         'Name=Android Emoji Theme\n'
         'Description=Emoji from Google\'s Noto font\n'
@@ -53,31 +75,25 @@ with open(os.path.join(themedir, 'theme2'), 'w', encoding='utf-8', newline='') a
         '[default]\n'
         )
 
-    filenames = []
-    names = {}
-    for emoji in emojis:
-        filename = 'emoji_u{}.png'.format('_'.join(emoji['sequence']))
-        filenames.append(filename)
-        names[filename] = emoji['name']
-
     total = 0
-    # find all existing image files and add them to the theme, if they are in the text file
-    for imgfile in os.listdir(themedir):
-        m = re.match('emoji_u(\w+)\.png', filename)
-        sequence = m.group(1).upper().split('_')
+    for emoji in emojis:
+        if emoji['sequence'] in exclude:
+            print('Skipping image:', emoji['filename'], emoji['name'])
+        if emoji['filename'] in images:
+            newtheme.write(theme_line(emoji['filename'], emoji['sequence']))
+            total += 1
+            print('Added image:', emoji['filename'], emoji['name'].encode('utf-8'))
+        else:
+            print('Image not found:', emoji['filename'], emoji['name'].encode('utf-8'))
 
-        if sequence and sequence not in exclude:
-            newtheme.write('{}\t{}\n'.format(imgfile, ''.join([chr(int(code, 16)) for code in sequence])))
-
-            if imgfile in filenames:
-                print('Added image:', imgfile, names[imgfile])
-                total += 1
+    for imgfile in images:
+        if imgfile not in filenames:
+            sequence = filename_to_sequence(imgfile)
+            if sequence in exclude:
+                print('Skipping image:', imgfile)
             else:
-                print('Extra image found:', imgfile)
-
-    # mention all emojis in the text file that do not have a matching image
-    for filename in filenames:
-        if not os.path.exists(os.path.join(themedir, filename)):
-            print('Image not found:', filename, names[filename].encode('utf-8'))
+                newtheme.write(theme_line(imgfile, sequence))
+                total += 1
+                print('Found and added extra image:', imgfile)
 
     print('Added', total, 'emojis to theme.')

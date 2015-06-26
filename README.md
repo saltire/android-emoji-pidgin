@@ -1,4 +1,4 @@
-# Android Emoji theme for Pidgin
+# Android emoji theme for Pidgin
 
 A smiley theme for Pidgin using the Android emoji symbols,
 taken from the Noto font at https://github.com/googlei18n/noto-emoji
@@ -19,6 +19,9 @@ You can then select the theme from Pidgin's Preferences menu, under Themes.
 
 A list of symbols can be found in `emoji-unicode8.txt`.
 This was scraped from charts found here: http://www.unicode.org/emoji/charts/index.html
+
+An ordered list is in `emoji-ordered.txt`, scraped from:
+http://www.unicode.org/emoji/charts/emoji-ordering.html
 
 Some information, from here: http://www.unicode.org/reports/tr51/
 
