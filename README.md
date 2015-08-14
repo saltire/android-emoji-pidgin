@@ -6,6 +6,8 @@ and resized to 25px width.
 
 This theme contains 860 symbols, up to Unicode 6.1.
 
+![Android emoji theme for Pidgin](./preview.png?raw=true)
+
 
 ## Installation
 
