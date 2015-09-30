@@ -1,5 +1,6 @@
 import os
 import re
+from xml.etree import ElementTree as etree
 
 from bs4 import BeautifulSoup
 import requests
@@ -30,8 +31,12 @@ def filename_to_sequence(filename):
         return m.group(1).upper().split('_')
 
 
+def sequence_to_text(sequence):
+    return ''.join([chr(int(code, 16)) for code in sequence])
+
+
 def theme_line(filename, sequence):
-    return '{}\t{}\n'.format(filename, ''.join([chr(int(code, 16)) for code in sequence]))
+    return '{}\t{}\n'.format(filename, sequence_to_text(sequence))
 
 
 emojis = []
@@ -66,6 +71,7 @@ for imgfile in os.listdir(themedir):
             images.append(imgfile)
 
 
+# Build Pidgin smiley theme
 with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as newtheme:
     newtheme.write(
         'Name=Android Emoji Theme\n'
@@ -96,4 +102,48 @@ with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as
                 total += 1
                 print('Found and added extra image:', imgfile)
 
-    print('Added', total, 'emojis to theme.')
+    print('Added', total, 'emojis to Pidgin theme.')
+
+
+# Build Adium emoticon theme
+plist = etree.Element('plist', {'version': '1.0'})
+dict1 = etree.SubElement(plist, 'dict')
+etree.SubElement(dict1, 'key').text = 'AdiumSetVersion'
+etree.SubElement(dict1, 'integer').text = '1'
+etree.SubElement(dict1, 'key').text = 'Emoticons'
+dict2 = etree.SubElement(dict1, 'dict')
+
+def create_element(dict_elem, filename, sequence, name):
+    etree.SubElement(dict_elem, 'key').text = filename
+    dict3 = etree.SubElement(dict_elem, 'dict')
+    etree.SubElement(dict3, 'key').text = 'Equivalents'
+    array = etree.SubElement(dict3, 'array')
+    etree.SubElement(array, 'string').text = sequence_to_text(sequence)
+    etree.SubElement(dict3, 'key').text = 'Name'
+    etree.SubElement(dict3, 'string').text = name
+
+total = 0
+for emoji in emojis:
+    if emoji['sequence'] in exclude:
+        print('Skipping image:', emoji['filename'], emoji['name'])
+    if emoji['filename'] in images:
+        create_element(dict2, emoji['filename'], emoji['sequence'], emoji['name'])
+        total += 1
+        print('Added image:', emoji['filename'], emoji['name'].encode('utf-8'))
+    else:
+        print('Image not found:', emoji['filename'], emoji['name'].encode('utf-8'))
+
+for imgfile in images:
+    if imgfile not in filenames:
+        sequence = filename_to_sequence(imgfile)
+        if sequence in exclude:
+            print('Skipping image:', imgfile)
+        else:
+            create_element(dict2, imgfile, sequence, '***' + imgfile)
+            total += 1
+            print('Found and added extra image:', imgfile)
+
+print('Added', total, 'emojis to Adium theme.')
+
+etree.ElementTree(plist).write(os.path.join(themedir, 'Emoticons.plist'),
+                               encoding='utf-8', xml_declaration=True)
