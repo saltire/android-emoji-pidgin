@@ -1,10 +1,10 @@
-# Android emoji theme for Pidgin
+# Android emoji theme for Pidgin/Adium
 
-A smiley theme for Pidgin using the Android emoji symbols,
+A smiley theme for Pidgin and Adium using the Android emoji symbols,
 taken from the Noto font at https://github.com/googlei18n/noto-emoji
 and resized to 25px width.
 
-This theme contains 860 symbols, up to Unicode 6.1.
+This theme contains 1075 symbols, up to Unicode 8.0.
 
 ![Android emoji theme for Pidgin](./preview.png?raw=true)
 
@@ -25,19 +25,16 @@ This was scraped from charts found here: http://www.unicode.org/emoji/charts/ind
 An ordered list is in `emoji-ordered.txt`, scraped from:
 http://www.unicode.org/emoji/charts/emoji-ordering.html
 
+More data can be found here: http://www.unicode.org/Public/emoji/
+
 Some information, from here: http://www.unicode.org/reports/tr51/
 
-- Level 1 Emoji
-  - 722 characters from Japanese carriers (3 of which are spaces, leaving 719)
-  - 126 common additions in Unicode 6.0 and 6.1
-  - 845 total
-- Level 2 Emoji
-  - 247 flags supported in Unicode 6.0, in addition to the 10 available in level 1
-  - 148 standard additions (most, but not all, are new to Unicode 7.0)
-  - 41 new symbols in Unicode 8.0 (including 5 skin-tone modifiers)
-  - 436 total
+- 722 characters from Japanese carriers (3 of which are spaces, leaving 719)
+- 126 common additions in Unicode 6.0 and 6.1
+- 247 flags supported in Unicode 6.0, in addition to the 10 already available
+- 190 standard additions (most, but not all, are new to Unicode 7.0 or 8.0)
+- 1282 total emoji in Unicode 8.0.
 
-1281 total emoji in Unicode 8.0.
-
-133 symbols are subject to skin-tone modifiers, yielding another 665 possible symbols.
-At some point I may add these to the theme.
+There are also 5 skin tone modifiers, which as of Unicode 8.0 can be combined with 64 symbols,
+yielding another 320 possible emoji.
+These don't seem to be supported by Noto yet, but at some point I may add them to the theme.

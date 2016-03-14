@@ -2,9 +2,6 @@ import os
 import re
 from xml.etree import ElementTree as etree
 
-from bs4 import BeautifulSoup
-import requests
-
 
 themedir = './android-emoji-theme'
 
