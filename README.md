@@ -12,7 +12,9 @@ This theme contains 1075 symbols, up to Unicode 8.0.
 ## Installation
 
 Copy the `android-emoji-theme` folder to
-`~/.purple/smileys` on Linux or Mac, or `%APPDATA%/Roaming/.purple/smileys` on Windows.
+`~/.purple/smileys` on Linux, or `%APPDATA%/Roaming/.purple/smileys` on Windows.
+For Adium on Mac, copy and rename the folder to
+`~/Library/Application\ Support/Adium\ 2.0/Emoticons/android-emoji-theme.AdiumEmoticonSet`.
 
 You can then select the theme from Pidgin's Preferences menu, under Themes.
 
