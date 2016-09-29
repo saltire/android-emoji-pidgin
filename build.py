@@ -5,6 +5,7 @@ from xml.etree import ElementTree as etree
 
 themedir = './android-emoji-theme'
 
+# Exclude modifier symbols.
 exclude = [
     ['0023'],
     ['0030'],
@@ -19,8 +20,12 @@ exclude = [
     ['0039'],
     ['00A9'],
     ['00AE'],
+    ['1F3FB'],
+    ['1F3FC'],
+    ['1F3FD'],
+    ['1F3FE'],
+    ['1F3FF']
 ]
-
 
 def filename_to_sequence(filename):
     m = re.match('emoji_u(\w+)\.png', filename)
@@ -40,18 +45,19 @@ emojis = []
 filenames = []
 names = {}
 
-print('Reading Unicode 8 list')
-with open('./emoji-ordered.txt', 'r', encoding='utf-8') as textfile:
+print('Reading Unicode 9.0 list')
+with open('./emoji-ordering.txt', 'r', encoding='utf-8') as textfile:
     for line in textfile.readlines():
-        m = re.match('((?:U\+[A-F\d]+ )+)(\S+) (.+)$', line)
+        m = re.match('((?:U\+[A-F\d]+ )+); ([\d.]+) # (\S+) (.+)$', line)
         if m:
             sequence = [code[2:] for code in m.group(1).lower().strip().split(' ')]
             filename = 'emoji_u{}.png'.format('_'.join(sequence))
 
             emojis.append({
                 'sequence': sequence,
-                'chars': m.group(2),
-                'name': m.group(3),
+                'version': m.group(2),
+                'chars': m.group(3),
+                'name': m.group(4),
                 'filename': filename,
             })
             filenames.append(filename)
@@ -68,7 +74,7 @@ for imgfile in os.listdir(themedir):
             images.append(imgfile)
 
 
-# Build Pidgin smiley theme
+# Build Pidgin smiley theme.
 with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as newtheme:
     newtheme.write(
         'Name=Android Emoji Theme\n'
@@ -102,7 +108,7 @@ with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as
     print('Added', total, 'emojis to Pidgin theme.')
 
 
-# Build Adium emoticon theme
+# Build Adium emoticon theme.
 plist = etree.Element('plist', {'version': '1.0'})
 dict1 = etree.SubElement(plist, 'dict')
 etree.SubElement(dict1, 'key').text = 'AdiumSetVersion'
