@@ -4,7 +4,7 @@ A smiley theme for Pidgin and Adium using the Android emoji symbols,
 taken from the Noto font at https://github.com/googlei18n/noto-emoji
 and resized to 25px width.
 
-This theme contains 1563 symbols, up to Unicode 9.0.
+This theme is up to date as of Unicode 12.0.
 
 ![Android emoji theme for Pidgin](./preview.png?raw=true)
 
