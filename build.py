@@ -28,7 +28,7 @@ exclude = [
 ]
 
 def filename_to_sequence(filename):
-    m = re.match('emoji_u(\w+)\.png', filename)
+    m = re.match(r'emoji_u(\w+)\.png', filename)
     if m:
         return m.group(1).upper().split('_')
 
@@ -37,18 +37,20 @@ def sequence_to_text(sequence):
     return ''.join([chr(int(code, 16)) for code in sequence])
 
 
-def theme_line(filename, sequence):
-    return '{}\t{}\n'.format(filename, sequence_to_text(sequence))
+def theme_line(filename, sequence, name=''):
+    return '{}\t{}{}\n'.format(filename,
+        ':{}:\t'.format(name.replace(' ', '_')) if name else '',
+        sequence_to_text(sequence))
 
 
 emojis = []
 filenames = []
 names = {}
 
-print('Reading Unicode 9.0 list')
+print('Reading Unicode emoji list')
 with open('./emoji-ordering.txt', 'r', encoding='utf-8') as textfile:
     for line in textfile.readlines():
-        m = re.match('((?:U\+[A-F\d]+ )+); ([\d.]+) # (\S+) (.+)$', line)
+        m = re.match(r'((?:U\+[A-F\d]+ )+); ([\d.]+) # (\S+) (.+)$', line)
         if m:
             sequence = [code[2:] for code in m.group(1).lower().strip().split(' ')]
             filename = 'emoji_u{}.png'.format('_'.join(sequence))
@@ -67,7 +69,7 @@ print('Read', len(emojis), 'emojis.')
 
 images = []
 for imgfile in os.listdir(themedir):
-    m = re.match('emoji_u(\w+)\.png', imgfile)
+    m = re.match(r'emoji_u(\w+)\.png', imgfile)
     if m:
         sequence = m.group(1).upper().split('_')
         if sequence not in exclude:
@@ -89,13 +91,13 @@ with open(os.path.join(themedir, 'theme'), 'w', encoding='utf-8', newline='') as
         if emoji['sequence'] in exclude:
             print('Skipping image:', emoji['filename'], emoji['name'])
         if emoji['filename'] in images:
-            newtheme.write(theme_line(emoji['filename'], emoji['sequence']))
+            newtheme.write(theme_line(emoji['filename'], emoji['sequence'], emoji['name']))
             total += 1
             print('Added image:', emoji['filename'], emoji['name'].encode('utf-8'))
         else:
             print('Image not found:', emoji['filename'], emoji['name'].encode('utf-8'))
 
-    for imgfile in images:
+    for imgfile in sorted(images):
         if imgfile not in filenames:
             sequence = filename_to_sequence(imgfile)
             if sequence in exclude:
@@ -149,4 +151,4 @@ for imgfile in images:
 print('Added', total, 'emojis to Adium theme.')
 
 etree.ElementTree(plist).write(os.path.join(themedir, 'Emoticons.plist'),
-                               encoding='utf-8', xml_declaration=True)
+    encoding='utf-8', xml_declaration=True)
